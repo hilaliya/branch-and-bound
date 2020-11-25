@@ -1,1 +1,1 @@
-# Branch-and-Bound
+# Dal-Sınr Algoritması
