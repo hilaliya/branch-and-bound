@@ -1,1 +1,1 @@
-# Dal-Sınr Algoritması
+# Dal-Sınır Algoritması
