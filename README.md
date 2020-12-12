@@ -1,4 +1,4 @@
-Consider the linear model below:
+Consider the linear mathematicalmodel below:
 
 max z=
 <img src="https://render.githubusercontent.com/render/math?math=z=3x_1%2B4x_2 ">
