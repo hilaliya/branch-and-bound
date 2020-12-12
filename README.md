@@ -1,14 +1,7 @@
 Consider the linear model below:
 
-
-
-$$ 2x_1 + x_2 \le 6 $$
-
-$$ 2x_1 + 3x_2 \le 9 $$
-
-
 max z=
-<img src="https://render.githubusercontent.com/render/math?math=3x_1%2B4x_2 ">
+<img src="https://render.githubusercontent.com/render/math?math=z=3x_1%2B4x_2 ">
 
 <img src="https://render.githubusercontent.com/render/math?math=2x_1 %2Bx_2\le6 "> 
 
@@ -21,7 +14,8 @@ max z=
 
 To solve the model, define the model to the program:
 
-![max%203x1%204x2.png](attachment:max%203x1%204x2.png)
+![max 3x1 4x2](https://user-images.githubusercontent.com/57063453/101983952-45903280-3c8f-11eb-96a5-18d204037382.png)
+
 
 The optimal solution is:
 
@@ -29,7 +23,7 @@ The optimal solution is:
 
 The program output:
 
-![max%203x1%204x2%20simplex.png](attachment:max%203x1%204x2%20simplex.png)
+![max 3x1 4x2 simplex](https://user-images.githubusercontent.com/57063453/101983982-7a9c8500-3c8f-11eb-9a76-043d2260117e.png)
 
 If we assume the variables are integer we can apply the branch and bound algorithm after obtaining the relaxed Linear solution 
 
@@ -39,5 +33,4 @@ The optimal integer solution will be:
 
 Type 1 to get the integer optimal solutino. The output of the program is given below:
 
-![max%203x1%204x2%20BB.png](attachment:max%203x1%204x2%20BB.png)
-%2B
+![max 3x1 4x2 BB](https://user-images.githubusercontent.com/57063453/101983997-93a53600-3c8f-11eb-89a6-621de869d519.png)
