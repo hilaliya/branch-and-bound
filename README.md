@@ -9,7 +9,7 @@ max z=
 
 <img src="https://render.githubusercontent.com/render/math?math=x_1 \ge 0, x_2\ge 0">
 
-<img src="https://render.githubusercontent.com/render/math?math=e^{i %2B\pi} =x%2B1">
+
 
 
 To solve the model, define the model to the program:
