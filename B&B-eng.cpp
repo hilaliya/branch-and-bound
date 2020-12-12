@@ -9,7 +9,7 @@ class tree{
 	public:
 		double secx;         // the variable chosen for prunning
 		double mom[12][12]; // BFS
-		double xmom[12];   // x deðerleri;
+		double xmom[12];   // x values;
 		double zmom;      // optimal value
 		int kst1;        // constraint included for child1
 		int kst2;	    // constraint included for child2
@@ -19,8 +19,8 @@ class tree{
 		double zchild1;
 		double xchild2[12];
 		double zchild2;
-		int ctrl1;  //control for prunnig child1   (-1: infeasible solution,  0: no improvement in z-value  1: optimal solution)
-		int ctrl2;  //control for prunnig child2
+		int ctrl1;  //control for prunnig child1   (-1: infeasible solution,  1: optimal solution)
+		int ctrl2;  //control for prunnig child2   (-1: infeasible solution,  1: optimal solution)
 };
 
 
@@ -59,7 +59,7 @@ int main(){
 	cin>>m;
 	cout<<endl;
 
-	double matrix[m][N]; //
+	double matrix[m][N];
 	for(int i=0;i<m;i++)
 	{
 		for(int j=0;j<N;j++)
@@ -185,7 +185,7 @@ int main(){
 
 double M=100;
 
-	//BFS0	
+	//Basic Feasible Solution	
 	for(int i=0; i<m; i++)
 	{	
 		for(int j=0; j<n; j++)
@@ -236,7 +236,7 @@ double M=100;
 		}	
 	}
 	
-	//BFS1
+
 	for(int i=0; i<n+sk+ak+yk; i++)	BFS1[0][i]=z[0][i];
 	
 	for(int i=1; i<m+1; i++)
@@ -247,7 +247,7 @@ double M=100;
 		}
 	}
 	
-	//BFS
+
 	for(int i=0; i<m+1; i++)
 	{
 		for(int j=0; j<n+sk+ak+yk+1; j++)
@@ -365,7 +365,7 @@ if(optimal==false)
 				if(x==-1 || x==idx[i])	{ x=-2;}
 			}
 			
-			if(x==-2){cout<<"\n***Infeasible solution!***\n"; 	break;}
+			if(x==-2){cout<<"\n***Infeasible solution!***\n";	break;}
 				
 			
 			cout<<"\n\npivot column: "<<x+1<<". column";   
@@ -425,7 +425,7 @@ if(optimal==false)
 				if(x==-1 || x==idx[i])	{ x=-2;}
 			}
 			
-			if(x==-2){cout<<"\n***Infeasible solution!***\n"; 	break;}
+			if(x==-2){cout<<"\n\n***Infeasible solution!***\n"; break;}
 			
 			else {cout<<"\npivot column: "<<x+1<<". column"; }
 			
@@ -584,25 +584,20 @@ double xr; //variable selected for the first branch
 int j=0;   
 for(int i=0; i<n; i++)
 {
-	if(X[i][0]==int(X[i][0])) j+=1;
+	if(X[i][0]!=int(X[i][0])) j+=1;
 }
-if(j==n && y!=-1) cout<<"\nAn integer solution is found";
-
-else if(j!=n && y!=-1)   
-
 
 //Branch and Bound Algorithm
-
-if(j!=n && y!=-1)
+if(j>0)
 {
 	
 int tms;  
-tree family[20];   //objelerden oluþan dizi
+tree family[20];  
 
 do
 {
-cout<<"\n\nTo find an integer solution, please press 1: ";
-cin>>tms;
+	cout<<"\n\nTo find an integer solution, please press 1: ";
+	cin>>tms;
 }while(tms!=1);
 
 //Branch-Bound Algorithm for max problem using breadth-first search
@@ -613,8 +608,10 @@ for(int i=0; i<n; i++){family[0].xmom[i]=X[i][0];}
 for(int i=0; i<n; i++){cout<<family[0].xmom[i]<<" ";}
 family[0].zmom=optz;
 	
-for(int i=0; i<m+1; i++){
-for(int j=0; j<n+sk+1; j++){
+for(int i=0; i<m+1; i++)
+{
+	for(int j=0; j<n+sk+1; j++)
+	{
 		family[0].mom[i][j]=BFS[i][j];
 	}
 }
@@ -633,521 +630,516 @@ for(int i=0; i<n; i++)
 int h=0; 
 
 do{		
-	family[h].secx=xr;	
+		family[h].secx=xr;	
 	
-	if(xr>round(xr))
-	{
-		family[h].kst1=round(xr);
-		family[h].kst2=int(xr)+1;
-	}
-	if(xr<round(xr))
-	{
-		family[h].kst1=int(xr);
-		family[h].kst2=round(xr);
-	}	
+		if(xr>round(xr))
+		{
+			family[h].kst1=round(xr);
+			family[h].kst2=int(xr)+1;
+		}
+		if(xr<round(xr))
+		{
+			family[h].kst1=int(xr);
+			family[h].kst2=round(xr);
+		}	
+					
+		cout<<"\nz:  "<<family[h].zmom<<endl;	
+		cout<<"Constraint 1: x<="<<family[h].kst1<<endl;  
+		cout<<"Constraint 2: x>="<<family[h].kst2<<endl;	
 		
-	
-	cout<<"\nz:  "<<family[h].zmom<<endl;	
-	cout<<"Constraint 1: x<="<<family[h].kst1<<endl;  
-	cout<<"Constraint 2: x>="<<family[h].kst2<<endl;	
-	
-// creating the simplex table for the first constraint kst1
-	
-	for(int i=0; i<m+1+byt; i++)
-	{
-		for(int j=0; j<n+sk+byt; j++)
-		{
-		family[h].child1[i][j]=family[h].mom[i][j];		
-		}
-	}
-	
-	for(int i=0; i<m+1+byt; i++)
-	{
-		family[h].child1[i][n+sk+byt]=0;
-		family[h].child1[i][n+sk+byt+1]=family[h].mom[i][n+sk+byt];
-	}
-	
-	int rfrns;  //holds the row number of the selected variable x in the simplex table
-	
-	for(int i=0; i<n; i++)  family[h].child1[m+byt+1][i]=0;  
-	family[h].child1[m+byt+1][n+sk+byt]=1;
-	family[h].child1[m+byt+1][n+sk+byt+1]=family[h].kst1-family[h].secx;
-	
-	for(int i=0; i<m+1; i++)
-	{
-		if(family[h].mom[i][n+sk+byt]==family[h].secx)	rfrns=i;
-	}
-
-	byt=byt+1;	
-	for(int i=n; i<n+sk+byt-1; i++)  
-	{	
-		family[h].child1[m+byt][i]=(-1)*family[h].mom[rfrns][i];
-	}
-	
-		
-	cout<<"\n\nthe BFS of the family["<<h<<"].child1:\n";
-	for(int i=0; i<m+1+byt; i++)
-	{
-		for(int j=0; j<n+sk+1+byt; j++)
-		{
-			cout<<" "<<family[h].child1[i][j]<<" ";
-		}
-		cout<<endl;
-	}
-	
-//Pivot column and row
-double pcol[m+1+byt][1];
-double prow[1][n+sk+1+byt];
-int x=-1;       // pivot column number
-int y=-1;      //pivot row number
-
-
-	//pivot row
-	for(int i=0; i<m+1+byt; i++)
-	{
-		if(family[h].child1[i][n+sk+byt]<0)	x=i; 			  
-	}
-	
-
-	if(x==-1)
-	{
-		cout<<"\nInfeasible solution\n"; 	
-		family[h].ctrl1=-1;					  
-	}
-
-	for(int i=0; i<n+sk+byt+1; i++)  {prow[0][i]=family[h].child1[x][i];}
-	
-	cout<<"\npivot row: ";
-	for(int i=0; i<n+sk+byt+1; i++)  {cout<<" "<<prow[0][i];}
-	
-	
-	//pivot column
-	double xx=999999;
-	for(int i=0; i<n+sk+byt; i++)
-	{
-		if(family[h].child1[x][i]<0)
-		{
-			if(abs(family[h].child1[0][i]/family[h].child1[x][i])<xx)
-			{	
-				xx=abs(family[h].child1[0][i]/family[h].child1[x][i]);
-				y=i;
-			}
-		}
-	}
-	
-	if(y==-1)
-	{
-		cout<<"\nUnbounded solution\n"; 	
-		family[h].ctrl1=-1;					  
-	}	
-	else
-	{
+		// creating the simplex table for the first constraint kst1		
 		for(int i=0; i<m+1+byt; i++)
 		{
-	    	pcol[i][0]=family[h].child1[i][y];	
-		}
-		
-		cout<<"\n\npivot column: \n";
-		for(int i=0; i<m+1+byt; i++)
-		{
-	    	cout<<pcol[i][0]<<"\n";	
-		}
-		
-		cout<<"\nChosen element: "<<family[h].child1[x][y];
-		
-		
-		//Row operations
-		double cell=family[h].child1[x][y];
-		double k[m+1+byt][1]; //vector holding the coefficients
-		for(int i=0; i<m+1+byt; i++)	k[i][0]=-pcol[i][0]/cell;
-		cout<<"\ncoefficients: ";
-		for(int i=0; i<m+1+byt; i++)	cout<<k[i][0]<<" ";
-		
-		// katsayýlarý tüm matris ile çarp
-		for(int i=0; i<m+1+byt; i++)
-		{
-		    for(int j=0; j<n+sk+byt+1; j++)
+			for(int j=0; j<n+sk+byt; j++)
 			{
-		    	family[h].child1[i][j]=prow[0][j]*k[i][0]+family[h].child1[i][j];
+			family[h].child1[i][j]=family[h].mom[i][j];		
 			}
-		}   
-	
-		for(int i=0; i<n+sk+byt+1; i++)
-		{
-			family[h].child1[x][i]=prow[0][i]/cell;
 		}
 		
 		for(int i=0; i<m+1+byt; i++)
 		{
-		    for(int j=0; j<n+sk+byt+1; j++)
-			{
-		    	if(abs(family[h].child1[i][j])<=0.0000000001) {	family[h].child1[i][j]=0;};
-			}
-		} 
-	
-		
-		cout<<"\n\nfamily["<<h<<"].child1 \n";
-		for(int i=0; i<m+1+byt; i++)
-		{
-		    for(int j=0; j<n+sk+byt+1; j++)
-			{
-		    	cout<<" "<<family[h].child1[i][j]<<" ";
-			}
-			cout<<endl;
-		} 
-		
-		for(int i=0; i<n; i++)
-		{
-			int bir=0;
-			int sfr=0;
-			int g=0;
-			for(int j=0; j<m+1+byt; j++)
-			{
-				if(family[h].child1[j][i]==1) {bir=bir+1; g=j;}
-				if(family[h].child1[j][i]==0) sfr=sfr+1;
-			}
-			if(bir==1 && sfr==m+byt) {family[h].xchild1[i]=family[h].child1[g][n+sk+byt];}  
+			family[h].child1[i][n+sk+byt]=0;
+			family[h].child1[i][n+sk+byt+1]=family[h].mom[i][n+sk+byt];
 		}
+		
+		int rfrns;  //holds the row number of the selected variable x in the simplex table
+		
+		for(int i=0; i<n; i++)  family[h].child1[m+byt+1][i]=0;  
+		family[h].child1[m+byt+1][n+sk+byt]=1;
+		family[h].child1[m+byt+1][n+sk+byt+1]=family[h].kst1-family[h].secx;
+		
+		for(int i=0; i<m+1; i++)
+		{
+			if(family[h].mom[i][n+sk+byt]==family[h].secx)	rfrns=i;
+		}
+	
+		byt=byt+1;	
+		for(int i=n; i<n+sk+byt-1; i++)  
+		{	
+			family[h].child1[m+byt][i]=(-1)*family[h].mom[rfrns][i];
+		}
+		
 			
-		cout<<"\nX values: ";
-		for(int i=0; i<n; i++){cout<<family[h].xchild1[i]<<" ";}
-		family[h].zchild1=family[h].child1[0][n+sk+byt];
-	    cout<<"\n\nz value of family["<<h<<"].child1: "<<family[h].zchild1<<endl;
-	
-	        
-	    int jj=0;
-	    for(int i=0; i<n; i++)
-	    {
-	    	if(abs(int(family[h].xchild1[i])-family[h].xchild1[i])<0.00001) 
+		cout<<"\n\nthe BFS of the family["<<h<<"].child1:\n";
+		for(int i=0; i<m+1+byt; i++)
+		{
+			for(int j=0; j<n+sk+1+byt; j++)
 			{
-				jj=jj+1;
-				cout<<"jj: "<<jj<<endl;
-				cout<<abs(int(family[h].xchild1[i])-family[h].xchild1[i])<<endl;
-			}
-			if(jj==n) {	family[h].ctrl1=1; cout<<"\nAn optimal integer soltion is found!\n";}
-		}
-	    		
-	}//else 
-	
-
-//creating the simplex table for the second constraint kst2
-
-byt=byt-1;
-	
-	for(int i=0; i<m+1+byt; i++)
-	{
-		for(int j=0; j<n+sk+byt; j++)
-		{
-			family[h].child2[i][j]=family[h].mom[i][j];		
-		}
-	}
-	
-	for(int i=0; i<m+1+byt; i++)
-	{
-		family[h].child2[i][n+sk+byt]=0;
-		family[h].child2[i][n+sk+byt+1]=family[h].mom[i][n+sk+byt];
-	}
-	
-	rfrns=0;  
-	
-	for(int i=0; i<n; i++)  family[h].child2[m+byt+1][i]=0;  
-	family[h].child2[m+byt+1][n+sk+byt]=1;
-	family[h].child2[m+byt+1][n+sk+byt+1]=family[h].secx-family[h].kst2;
-	
-	for(int i=0; i<m+1; i++)
-	{
-		if(family[h].mom[i][n+sk+byt]==family[h].secx)	rfrns=i;
-	}
-
-	byt=byt+1;	
-	for(int i=n; i<n+sk+byt-1; i++)  
-	{	
-		family[h].child2[m+byt][i]=family[h].mom[rfrns][i];
-	}
-	
-		
-	cout<<"\n\n BFS for the family["<<h<<"].child2:\n";
-	for(int i=0; i<m+1+byt; i++)
-	{
-		for(int j=0; j<n+sk+1+byt; j++)
-		{
-			cout<<" "<<family[h].child2[i][j]<<" ";
-		}
-		cout<<endl;
-	}
-		
-	x=-1;       // pivot column number
-	y=-1;      //pivot row number
-	
-	//pivot row
-	for(int i=0; i<m+1+byt; i++)
-	{
-		if(family[h].child2[i][n+sk+byt]<0)	x=i; 
-				  
-	}
-	
-	if(x==-1)
-	{
-		cout<<"\nInfeasible solution\n"; 	
-		family[h].ctrl2=-1;					  
-	}
-
-	for(int i=0; i<n+sk+byt+1; i++)  {prow[0][i]=family[h].child2[x][i];}
-	
-	cout<<"\n\npivot row: ";
-	for(int i=0; i<n+sk+byt+1; i++)  {cout<<" "<<prow[0][i];}
-	
-	
-	//pivot column
-	xx=999999;
-	for(int i=0; i<n+sk+byt; i++)
-	{
-		if(family[h].child2[x][i]<0)
-		{
-			if(abs(family[h].child2[0][i]/family[h].child2[x][i])<xx)
-			{	
-				xx=abs(family[h].child2[0][i]/family[h].child2[x][i]);
-				y=i;
-			}
-		}
-	}
-	
-	if(y==-1)
-	{
-		cout<<"\nInfeasible solution\n"; 	
-		family[h].ctrl2=-1;				  
-	}	
-	else
-	{
-		for(int i=0; i<m+1+byt; i++)
-		{
-    		pcol[i][0]=family[h].child2[i][y];	
-		}
-	
-		cout<<"\n\npivot column: \n";
-		for(int i=0; i<m+1+byt; i++)
-		{
-    		cout<<pcol[i][0]<<"\n";	
-		}
-	
-		cout<<"\nChosen element: "<<family[h].child2[x][y];
-	
-	
-		//row operations
-		double cell=family[h].child2[x][y];
-		double k[m+1+byt][1];
-		for(int i=0; i<m+1+byt; i++)	k[i][0]=-pcol[i][0]/cell;
-		cout<<"\ncoefficients: ";
-	
-		for(int i=0; i<m+1+byt; i++)	cout<<k[i][0]<<" ";
-		
-		for(int i=0; i<m+1+byt; i++)
-		{
-		    for(int j=0; j<n+sk+byt+1; j++)
-			{
-		    	family[h].child2[i][j]=prow[0][j]*k[i][0]+family[h].child2[i][j];
-			}
-		}   
-
-		for(int i=0; i<n+sk+byt+1; i++)
-		{
-			family[h].child2[x][i]=prow[0][i]/cell;
-		}
-		
-		for(int i=0; i<m+1+byt; i++)
-		{
-		    for(int j=0; j<n+sk+byt+1; j++)
-			{
-		    	if(abs(family[h].child2[i][j])<=0.0000000001) {	family[h].child2[i][j]=0;};
-			}
-		} 
-		
-		cout<<"\n\nfamily["<<h<<"].child2 \n";
-		for(int i=0; i<m+1+byt; i++)
-		{
-		    for(int j=0; j<n+sk+byt+1; j++)
-			{
-		    	cout<<" "<<family[h].child2[i][j]<<" ";
+				cout<<" "<<family[h].child1[i][j]<<" ";
 			}
 			cout<<endl;
-		} 
+		}
 		
+		//Pivot column and row
+		double pcol[m+1+byt][1];
+		double prow[1][n+sk+1+byt];
+		int x=-1;       // pivot column number
+		int y=-1;      //pivot row number	
+	
+		//pivot row
+		for(int i=0; i<m+1+byt; i++)
+		{
+			if(family[h].child1[i][n+sk+byt]<0)	x=i; 			  
+		}
+		
+	
+		if(x==-1)
+		{
+			cout<<"\n\n***Infeasible solution!***\n"; 	
+			family[h].ctrl1=-1;					  
+		}
+	
+		for(int i=0; i<n+sk+byt+1; i++)  {prow[0][i]=family[h].child1[x][i];}
+		
+		cout<<"\npivot row: ";
+		for(int i=0; i<n+sk+byt+1; i++)  {cout<<" "<<prow[0][i];}
+		
+		
+		//pivot column
+		double xx=999999;
+		for(int i=0; i<n+sk+byt; i++)
+		{
+			if(family[h].child1[x][i]<0)
+			{
+				if(abs(family[h].child1[0][i]/family[h].child1[x][i])<xx)
+				{	
+					xx=abs(family[h].child1[0][i]/family[h].child1[x][i]);
+					y=i;
+				}
+			}
+		}
+		
+		if(y==-1)
+		{
+			cout<<"\n\n***Unbounded solution***\n"; 	
+			family[h].ctrl1=-1;					  
+		}	
+		else
+		{
+			for(int i=0; i<m+1+byt; i++)
+			{
+		    	pcol[i][0]=family[h].child1[i][y];	
+			}
+			
+			cout<<"\n\npivot column: \n";
+			for(int i=0; i<m+1+byt; i++)
+			{
+		    	cout<<pcol[i][0]<<"\n";	
+			}
+			
+			cout<<"\nChosen element: "<<family[h].child1[x][y];
+			
+			
+			//Row operations
+			double cell=family[h].child1[x][y];
+			double k[m+1+byt][1]; //vector holding the coefficients
+			for(int i=0; i<m+1+byt; i++)	k[i][0]=-pcol[i][0]/cell;
+			cout<<"\ncoefficients: ";
+			for(int i=0; i<m+1+byt; i++)	cout<<k[i][0]<<" ";
+			
+			for(int i=0; i<m+1+byt; i++)
+			{
+			    for(int j=0; j<n+sk+byt+1; j++)
+				{
+			    	family[h].child1[i][j]=prow[0][j]*k[i][0]+family[h].child1[i][j];
+				}
+			}   
+		
+			for(int i=0; i<n+sk+byt+1; i++)
+			{
+				family[h].child1[x][i]=prow[0][i]/cell;
+			}
+			
+			for(int i=0; i<m+1+byt; i++)
+			{
+			    for(int j=0; j<n+sk+byt+1; j++)
+				{
+			    	if(abs(family[h].child1[i][j])<=0.0000000001) {	family[h].child1[i][j]=0;};
+				}
+			} 
+			
+			cout<<"\n\nfamily["<<h<<"].child1 \n";
+			for(int i=0; i<m+1+byt; i++)
+			{
+			    for(int j=0; j<n+sk+byt+1; j++)
+				{
+			    	cout<<" "<<family[h].child1[i][j]<<" ";
+				}
+				cout<<endl;
+			} 
+			
 			for(int i=0; i<n; i++)
 			{
 				int bir=0;
 				int sfr=0;
 				int g=0;
 				for(int j=0; j<m+1+byt; j++)
-		    	{
-					if(family[h].child2[j][i]==1) {bir=bir+1; g=j;}
-					if(family[h].child2[j][i]==0) sfr=sfr+1;
-			    }
-			    if(bir==1 && sfr==m+byt) {family[h].xchild2[i]=family[h].child2[g][n+sk+byt];}  
+				{
+					if(family[h].child1[j][i]==1) {bir=bir+1; g=j;}
+					if(family[h].child1[j][i]==0) sfr=sfr+1;
+				}
+				if(bir==1 && sfr==m+byt) {family[h].xchild1[i]=family[h].child1[g][n+sk+byt];}  
+			}
+				
+			cout<<"\nX values: ";
+			for(int i=0; i<n; i++){cout<<family[h].xchild1[i]<<" ";}
+			family[h].zchild1=family[h].child1[0][n+sk+byt];
+		    cout<<"\n\nz value of family["<<h<<"].child1: "<<family[h].zchild1<<endl;
+		
+		        
+		    int jj=0;
+		    for(int i=0; i<n; i++)
+		    {
+		    	if(abs(int(family[h].xchild1[i])-family[h].xchild1[i])<0.00001) 
+				{
+					jj=jj+1;
+				}
+				if(jj==n) {	family[h].ctrl1=1; cout<<"\n***An optimal integer soltion is found!***\n";}
+			}
+		    		
+		}//else 
+		
+	
+		//creating the simplex table for the second constraint kst2	
+		byt=byt-1;
+		
+		for(int i=0; i<m+1+byt; i++)
+		{
+			for(int j=0; j<n+sk+byt; j++)
+			{
+				family[h].child2[i][j]=family[h].mom[i][j];		
+			}
+		}
+		
+		for(int i=0; i<m+1+byt; i++)
+		{
+			family[h].child2[i][n+sk+byt]=0;
+			family[h].child2[i][n+sk+byt+1]=family[h].mom[i][n+sk+byt];
+		}
+		
+		rfrns=0;  
+		
+		for(int i=0; i<n; i++)  family[h].child2[m+byt+1][i]=0;  
+		family[h].child2[m+byt+1][n+sk+byt]=1;
+		family[h].child2[m+byt+1][n+sk+byt+1]=family[h].secx-family[h].kst2;
+		
+		for(int i=0; i<m+1; i++)
+		{
+			if(family[h].mom[i][n+sk+byt]==family[h].secx)	rfrns=i;
+		}
+	
+		byt=byt+1;	
+		for(int i=n; i<n+sk+byt-1; i++)  
+		{	
+			family[h].child2[m+byt][i]=family[h].mom[rfrns][i];
+		}
+				
+		cout<<"\n\n BFS for the family["<<h<<"].child2:\n";
+		for(int i=0; i<m+1+byt; i++)
+		{
+			for(int j=0; j<n+sk+1+byt; j++)
+			{
+				cout<<" "<<family[h].child2[i][j]<<" ";
+			}
+			cout<<endl;
+		}
+			
+		x=-1;       // pivot column number
+		y=-1;      //pivot row number
+		
+		//pivot row
+		for(int i=0; i<m+1+byt; i++)
+		{
+			if(family[h].child2[i][n+sk+byt]<0)	x=i; 
+					  
+		}
+		
+		if(x==-1)
+		{
+			cout<<"\n\n***Infeasible solution***\n"; 	
+			family[h].ctrl2=-1;					  
+		}
+	
+		for(int i=0; i<n+sk+byt+1; i++)  {prow[0][i]=family[h].child2[x][i];}
+		
+		cout<<"\n\npivot row: ";
+		for(int i=0; i<n+sk+byt+1; i++)  {cout<<" "<<prow[0][i];}
+		
+		
+		//pivot column
+		xx=999999;
+		for(int i=0; i<n+sk+byt; i++)
+		{
+			if(family[h].child2[x][i]<0)
+			{
+				if(abs(family[h].child2[0][i]/family[h].child2[x][i])<xx)
+				{	
+					xx=abs(family[h].child2[0][i]/family[h].child2[x][i]);
+					y=i;
+				}
+			}
+		}
+		
+		if(y==-1)
+		{
+			cout<<"\n\n***Infeasible solution***\n"; 	
+			family[h].ctrl2=-1;				  
+		}	
+		else
+		{
+			for(int i=0; i<m+1+byt; i++)
+			{
+	    		pcol[i][0]=family[h].child2[i][y];	
+			}
+		
+			cout<<"\n\npivot column: \n";
+			for(int i=0; i<m+1+byt; i++)
+			{
+	    		cout<<pcol[i][0]<<"\n";	
+			}
+		
+			cout<<"\nChosen element: "<<family[h].child2[x][y];		
+		
+			//row operations
+			double cell=family[h].child2[x][y];
+			double k[m+1+byt][1];
+			for(int i=0; i<m+1+byt; i++)	k[i][0]=-pcol[i][0]/cell;
+			cout<<"\ncoefficients: ";
+		
+			for(int i=0; i<m+1+byt; i++)	cout<<k[i][0]<<" ";
+			
+			for(int i=0; i<m+1+byt; i++)
+			{
+			    for(int j=0; j<n+sk+byt+1; j++)
+				{
+			    	family[h].child2[i][j]=prow[0][j]*k[i][0]+family[h].child2[i][j];
+				}
+			}   
+	
+			for(int i=0; i<n+sk+byt+1; i++)
+			{
+				family[h].child2[x][i]=prow[0][i]/cell;
 			}
 			
+			for(int i=0; i<m+1+byt; i++)
+			{
+			    for(int j=0; j<n+sk+byt+1; j++)
+				{
+			    	if(abs(family[h].child2[i][j])<=0.0000000001) {	family[h].child2[i][j]=0;};
+				}
+			} 
+			
+			cout<<"\n\nfamily["<<h<<"].child2 \n";
+			for(int i=0; i<m+1+byt; i++)
+			{
+			    for(int j=0; j<n+sk+byt+1; j++)
+				{
+			    	cout<<" "<<family[h].child2[i][j]<<" ";
+				}
+				cout<<endl;
+			} 
+			
+			for(int i=0; i<n; i++)
+			{
+				int bir=0;
+				int sfr=0;
+				int g=0;
+				for(int j=0; j<m+1+byt; j++)
+				{
+					if(family[h].child2[j][i]==1) {bir=bir+1; g=j;}
+					if(family[h].child2[j][i]==0) sfr=sfr+1;
+				}
+				if(bir==1 && sfr==m+byt) {family[h].xchild2[i]=family[h].child2[g][n+sk+byt];}  
+			}
+				
 			cout<<"\nX values: ";
 			for(int i=0; i<n; i++){cout<<family[h].xchild2[i]<<" ";}
 			family[h].zchild2=family[h].child2[0][n+sk+byt];
-	        cout<<"\n\n z value of family["<<h<<"].child2 : "<<family[h].zchild2<<endl;
-	        
-	        int jj=0;
-	        for(int i=0; i<n; i++)
-	        {
-	        	if(abs(int(family[h].xchild2[i])-family[h].xchild2[i])<0.00001) 
+		    cout<<"\n\n z value of family["<<h<<"].child2 : "<<family[h].zchild2<<endl;
+		        
+		    int jj=0;
+		    for(int i=0; i<n; i++)
+		    {
+		        if(abs(int(family[h].xchild2[i])-family[h].xchild2[i])<0.00001) 
 				{
 					jj=jj+1;
-					cout<<"jj: "<<jj<<endl;
-					cout<<abs(int(family[h].xchild2[i])-family[h].xchild2[i])<<endl;
 				}
 				if(jj==n) {	family[h].ctrl2=1; cout<<"\nAn optimal integer soltion is found!\n";} 
-			}
-	            
-	}// else child2
-
-	//If the 1st branch did not give an integer result and gave a better result than the 2nd branch, the branch is continued from the 1st branch.
-	if( !strcmp(tip, "max") && family[h].ctrl1==0 && family[h].zchild1>family[h].zchild2)   
-	{	
-		for(int i=0; i<m+1+byt; i++)
-		{for(int j=0; j<n+sk+byt+1; j++) {family[h+1].mom[i][j]=family[h].child1[i][j];}}
-		
-		for(int i=0; i<n; i++)
-		{	
-			xr= family[h].xchild1[i]; 
-			if(family[h].xchild1[i]!=int(family[h].xchild1[i]))
-			{
-			 cout<<"\nVariable selected for branching : "<<xr;
-			 break;
-			}
-		}
-		
-		family[h+1].zmom=family[h].zchild1;
-		h=h+1;
-	}
+			}		            
+		}// else child2
 	
-	else if(!strcmp(tip, "max") && family[h].ctrl2==0 && family[h].zchild2>family[h].zchild1)
-	{
-		for(int i=0; i<m+1+byt; i++)
-		{for(int j=0; j<n+sk+byt+1; j++){family[h+1].mom[i][j]=family[h].child2[i][j];}}
-		
-		for(int i=0; i<n; i++)
-		{	
-			xr= family[h].xchild2[i]; 
-			if(family[h].xchild2[i]!=int(family[h].xchild2[i]))
-			{
-		 	cout<<"\nVariable selected for branching : "<<xr;
-		 	break;
+			//If the 1st branch doesn't give an integer solution but gives a better result than the 2nd branch, continue from the 1st branch (max. problems)
+			if( !strcmp(tip, "max") && family[h].ctrl1==0 && family[h].zchild1>family[h].zchild2)   
+			{	
+				for(int i=0; i<m+1+byt; i++)
+				{for(int j=0; j<n+sk+byt+1; j++) {family[h+1].mom[i][j]=family[h].child1[i][j];}}
+				
+				for(int i=0; i<n; i++)
+				{	
+					xr= family[h].xchild1[i]; 
+					if(family[h].xchild1[i]!=int(family[h].xchild1[i]))
+					{
+					 cout<<"\nVariable selected for branching : "<<xr;
+					 break;
+					}
+				}
+				
+				family[h+1].zmom=family[h].zchild1;
+				h=h+1;
 			}
-		}
-
-		family[h+1].zmom=family[h].zchild2;
-		h=h+1;
-	}
-	
-	//If the 1st branch did not give an integer result and gave a better result than the 2nd branch, the branch is continued from the 1st branch.
-	if( !strcmp(tip, "min") && family[h].ctrl2==0 && family[h].zchild1>family[h].zchild2) 
-	{	
-		for(int i=0; i<m+1+byt; i++)
-		{for(int j=0; j<n+sk+byt+1; j++) {family[h+1].mom[i][j]=family[h].child2[i][j];}}
+			//If the 2st branch doesn't give an integer solution but gives a better result than the 1st branch, continue from the 2nd branch (max. problems)
+			else if(!strcmp(tip, "max") && family[h].ctrl2==0 && family[h].zchild2>family[h].zchild1)
+			{
+				for(int i=0; i<m+1+byt; i++)
+				{for(int j=0; j<n+sk+byt+1; j++){family[h+1].mom[i][j]=family[h].child2[i][j];}}
+				
+				for(int i=0; i<n; i++)
+				{	
+					xr= family[h].xchild2[i]; 
+					if(family[h].xchild2[i]!=int(family[h].xchild2[i]))
+					{
+				 	cout<<"\nVariable selected for branching : "<<xr;
+				 	break;
+					}
+				}
 		
-		for(int i=0; i<n; i++)
-		{	
-			xr= family[h].xchild2[i];
-			if(family[h].xchild2[i]!=int(family[h].xchild2[i]))
-			{
-			 cout<<"\nVariable selected for branching : "<<xr;
-			 break;
+				family[h+1].zmom=family[h].zchild2;
+				h=h+1;
 			}
-		}
-		family[h+1].zmom=family[h].zchild2;
-		h=h+1;
-	}
-	
-	else if(!strcmp(tip, "min") && family[h].ctrl1==0 && family[h].zchild2>family[h].zchild1)
-	{
-		for(int i=0; i<m+1+byt; i++)
-		{for(int j=0; j<n+sk+byt+1; j++){family[h+1].mom[i][j]=family[h].child1[i][j];}}
-		
-		for(int i=0; i<n; i++)
-		{	
-			xr= family[h].xchild1[i]; 
-			if(family[h].xchild1[i]!=int(family[h].xchild1[i]))
-			{
-			 cout<<"\nVariable selected for branching : "<<xr;
-			 break;
-			}
-		}
-		family[h+1].zmom=family[h].zchild1;
-		h=h+1;
-	}
-	
-}while(family[h].ctrl1==0 || family[h].ctrl2==0);
-
-int best=0;
-int child=0;
-
-if(!strcmp(tip, "max"))
-{
-	optz=0;
-
-	for(int i=0;i<=h; i++)
-	{
-	    if(family[i].ctrl1==1)
-	    {
-	    	if(optz<family[i].zchild1)
-			{
-				optz=family[i].zchild1;
-				best=i;	
-				child=1;	
-			} 
-		}
 			
-		if(family[i].ctrl2==1)
-		{
-			if(optz<family[i].zchild2) 
+			//If the 1st branch doesn't give an integer solution but gives a better result than the 2nd branch, continue from the 1st branch (min. problems)
+			if( !strcmp(tip, "min") && family[h].ctrl2==0 && family[h].zchild1>family[h].zchild2) 
+			{	
+				for(int i=0; i<m+1+byt; i++)
+				{for(int j=0; j<n+sk+byt+1; j++) {family[h+1].mom[i][j]=family[h].child2[i][j];}}
+				
+				for(int i=0; i<n; i++)
+				{	
+					xr= family[h].xchild2[i];
+					if(family[h].xchild2[i]!=int(family[h].xchild2[i]))
+					{
+					 cout<<"\nVariable selected for branching : "<<xr;
+					 break;
+					}
+				}
+				family[h+1].zmom=family[h].zchild2;
+				h=h+1;
+			}
+			//If the 2st branch doesn't give an integer solution but gives a better result than the 1st branch, continue from the 2nd branch (min problems)	
+			else if(!strcmp(tip, "min") && family[h].ctrl1==0 && family[h].zchild2>family[h].zchild1)
 			{
-				optz=family[i].zchild2;
-				best=i;	
-				child=2;	
-			} 
-		}
-	}
-}
-
-else if(!strcmp(tip, "min"))
-{
-	optz=999999;
-
-	for(int i=0;i<=h; i++)
-	{
-	    if(family[i].ctrl1==1)
-	    {
-	    	if(optz>family[i].zchild1)
-			{
-				optz=family[i].zchild1;
-				best=i;	
-				child=1;	
-			} 
-		}
+				for(int i=0; i<m+1+byt; i++)
+				{for(int j=0; j<n+sk+byt+1; j++){family[h+1].mom[i][j]=family[h].child1[i][j];}}
+				
+				for(int i=0; i<n; i++)
+				{	
+					xr= family[h].xchild1[i]; 
+					if(family[h].xchild1[i]!=int(family[h].xchild1[i]))
+					{
+					 cout<<"\nVariable selected for branching : "<<xr;
+					 break;
+					}
+				}
+				family[h+1].zmom=family[h].zchild1;
+				h=h+1;
+			}
 			
-		if(family[i].ctrl2==1)
+	}while(family[h].ctrl1==0 || family[h].ctrl2==0);
+		
+		int best=0;
+		int child=0;
+
+		if(!strcmp(tip, "max"))
 		{
-			if(optz>family[i].zchild2) 
+			optz=0;
+		
+			for(int i=0;i<=h; i++)
 			{
-				optz=family[i].zchild2;
-				best=i;	
-				child=2;	
-			} 
+			    if(family[i].ctrl1==1)
+			    {
+			    	if(optz<family[i].zchild1)
+					{
+						optz=family[i].zchild1;
+						best=i;	
+						child=1;	
+					} 
+				}
+					
+				if(family[i].ctrl2==1)
+				{
+					if(optz<family[i].zchild2) 
+					{
+						optz=family[i].zchild2;
+						best=i;	
+						child=2;	
+					} 
+				}
+			}
 		}
-	}
-}
 
-
-cout<<"\n\n\nOptimal result: "<<optz<<endl;
-cout<<"\nVariables: ";
-if(child==1) for(int i=0; i<n; i++){cout<<"x"<<i+1<<": "<<family[best].xchild1[i]<<" ";}
-else if(child==2) for(int i=0; i<n; i++){cout<<"\nx"<<i+1<<": "<<family[best].xchild2[i]<<" ";}
-
-} //branch and bound
+		else if(!strcmp(tip, "min"))
+		{
+			optz=999999;
+		
+			for(int i=0;i<=h; i++)
+			{
+			    if(family[i].ctrl1==1)
+			    {
+			    	if(optz>family[i].zchild1)
+					{
+						optz=family[i].zchild1;
+						best=i;	
+						child=1;	
+					} 
+				}
+					
+				if(family[i].ctrl2==1)
+				{
+					if(optz>family[i].zchild2) 
+					{
+						optz=family[i].zchild2;
+						best=i;	
+						child=2;	
+					} 
+				}
+			}
+		}
+	
+		if (family[h].ctrl1==1 || family[h].ctrl2==1)
+		{
+			cout<<"\n\n--------------------------------------------------------";
+			cout<<"\n\n\nOptimal result: "<<optz<<endl;
+			cout<<"\nVariables: ";
+			if(child==1) for(int i=0; i<n; i++){cout<<"x"<<i+1<<": "<<family[best].xchild1[i]<<" ";}
+			else if(child==2) for(int i=0; i<n; i++){cout<<"\nx"<<i+1<<": "<<family[best].xchild2[i]<<" ";}
+		}
+		else
+		{
+			cout<<"\n\n--------------------------------------------------------";
+			cout<<"\n\nResults: There is no integer solution\n\n";
+		}
+		
+	} //branch and bound
 
 return 0;
 }
