@@ -1,6 +1,6 @@
 Consider the linear model below:
 
-$$ \textrm{max z} = 3x_1 + 4x_2 $$
+$ \textrm{max z} = 3x_1 + 4x_2 $
 
 $$ 2x_1 + x_2 \le 6 $$
 
