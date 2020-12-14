@@ -12,7 +12,7 @@ max z=
 
 
 
-To solve the model, define the model parameters to the program:
+To solve the model, define the model parameters to the program as shown below:
 
 ![max 3x1 4x2](https://user-images.githubusercontent.com/57063453/101983952-45903280-3c8f-11eb-96a5-18d204037382.png)
 
